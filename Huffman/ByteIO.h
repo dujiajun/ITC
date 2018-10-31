@@ -7,8 +7,7 @@
 #include<string>
 #include"DataType.h"
 
-static size_t getFileSize(FILE* file);
-static size_t getFileSize(const char* filePath);
+
 
 class IOHelper
 {

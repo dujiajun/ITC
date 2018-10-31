@@ -53,18 +53,24 @@ void HuffmanTree::insert(ByteInfo &n)
 {
 	Node * node = new Node(&n);
 	node->prob = n.prob;
+	node->isLeaf = true;
 	heap.push(node);
 }
 
 void HuffmanTree::encode(std::vector<ByteInfo> &v)
 {
-
 	for (auto &i : v)
 	{
 		insert(i);
 	}
 	generateHuffmanTree();
 	dfs(root, "");
+}
+
+void HuffmanTree::clear()
+{
+	while (!heap.empty())heap.pop();
+	deconstruction(root);
 }
 
 HuffmanTree:: ~HuffmanTree()

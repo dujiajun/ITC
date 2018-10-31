@@ -28,12 +28,13 @@ namespace CompressGUI
             InitializeComponent();
         }
 
-        public enum Code { CODE_HUFFMAN , CODE_ARITHMETIC , CODE_LZ };
-
-        public Code CodingMethod;
+        public enum CODE { CODE_HUFFMAN , CODE_ARITHMETIC , CODE_LZ };
+        public enum ACTION { ENCODE,DECODE};
+        public CODE CodingMethod = CODE.CODE_HUFFMAN;
+        public ACTION action = ACTION.ENCODE;
         private string SrcFileName;
         private string DstFileName;
-
+        private string exe, arg;
         private void Btn_open_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog
@@ -44,7 +45,7 @@ namespace CompressGUI
             if (openFileDialog.ShowDialog()==System.Windows.Forms.DialogResult.OK)
             {
                 SrcFileName = openFileDialog.FileName;
-                Tb_dst.Text = SrcFileName;
+                Tb_src.Text = SrcFileName;
                 FileInfo fileInfo = new FileInfo(SrcFileName);
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(SrcFileName);
                 Tb_filename.Content = SrcFileName.Substring(SrcFileName.LastIndexOf('\\')+1);
@@ -62,29 +63,52 @@ namespace CompressGUI
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 DstFileName = saveFileDialog.FileName;
-                Tb_src.Text = DstFileName;
+                Tb_dst.Text = DstFileName;
             }
         }
 
         private void Rb_huffman_Checked(object sender, RoutedEventArgs e)
         {
-            CodingMethod = Code.CODE_HUFFMAN;
+            CodingMethod = CODE.CODE_HUFFMAN;
         }
 
         private void Rb_arithmetic_Checked(object sender, RoutedEventArgs e)
         {
-            CodingMethod = Code.CODE_ARITHMETIC;
+            CodingMethod = CODE.CODE_ARITHMETIC;
         }
 
         private void Rb_lz_Checked(object sender, RoutedEventArgs e)
         {
-            CodingMethod = Code.CODE_LZ;
+            CodingMethod = CODE.CODE_LZ;
         }
 
         private void Btn_do_Click(object sender, RoutedEventArgs e)
         {
+            switch (action)
+            {
+                case ACTION.ENCODE:
+                    arg = "-encode";
+                    break;
+                case ACTION.DECODE:
+                    arg = "-decode";
+                    break;
+                default:
+                    arg = "-encode";
+                    break;
+            }
+            switch (CodingMethod)
+            {
+                case CODE.CODE_HUFFMAN:
+                    exe = "Huffman.exe";
+                    break;
+                default:
+                    exe = "Huffman.exe";
+                    break;
+            }
+            arg = arg + " " + Tb_src.Text + " " + Tb_dst.Text;
             Thread thread = new Thread(RunCommand);
             thread.Start();
+            Pb_main.Value = 0;
         }
         private void RunCommand()
         {
@@ -97,14 +121,26 @@ namespace CompressGUI
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.CreateNoWindow = true;
                 p.Start();
-                p.StandardInput.WriteLine("ping baidu.com&exit");
+
+                p.StandardInput.WriteLine(exe + " " + arg + " &exit");
                 p.StandardInput.AutoFlush = true;
                 StreamReader reader = p.StandardOutput;
                 string line;
                 while (!reader.EndOfStream)
                 {
                     line = reader.ReadLine();
-                    Dispatcher.Invoke(new dg_SetOutputLabel(SetOutputLabelText), line);
+                    if (line.StartsWith("Progress:"))
+                    {
+                        Dispatcher.Invoke(new dg_SetProgressBar(SetProgressBar), Convert.ToDouble(line.Substring(9)));
+                    }
+                    else
+                    {
+                        if(line.Equals("写入完成"))
+                        {
+                            Dispatcher.Invoke(new dg_SetProgressBar(SetProgressBar), 1);
+                        }
+                        Dispatcher.Invoke(new dg_SetOutputLabel(SetOutputLabelText), line);
+                    }
                 }
                 p.WaitForExit();
                 p.Close();
@@ -115,5 +151,21 @@ namespace CompressGUI
             Lb_output.Content = text;
         }
         private delegate void dg_SetOutputLabel(string text);
+
+        private void SetProgressBar(double value)
+        {
+            Pb_main.Value = value;
+        }
+        private delegate void dg_SetProgressBar(double value);
+
+        private void Rb_encode_Checked(object sender, RoutedEventArgs e)
+        {
+            action = ACTION.ENCODE;
+        }
+
+        private void Rb_decode_Checked(object sender, RoutedEventArgs e)
+        {
+            action = ACTION.DECODE;
+        }
     }
 }

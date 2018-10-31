@@ -17,7 +17,7 @@ private:
 		Node * left;
 		Node * right;
 		int prob;
-
+		bool isLeaf;
 		Node(ByteInfo * p = nullptr)
 		{
 			info = p;
@@ -25,6 +25,7 @@ private:
 			left = nullptr;
 			right = nullptr;
 			prob = 0;
+			isLeaf = false;
 		}
 	};
 
@@ -44,6 +45,7 @@ private:
 public:
 	HuffmanTree() :root(nullptr) {}
 	void encode(std::vector<ByteInfo> &v);
+	void clear();
 	~HuffmanTree();
 };
 #endif // HUFFMANTREE_H
