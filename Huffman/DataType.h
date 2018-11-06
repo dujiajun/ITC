@@ -2,7 +2,7 @@
 
 #ifndef DATATYPE_H
 #define DATATYPE_H
-
+#define COUT_IN_CONSOLE
 #include <vector>
 typedef unsigned char byte;
 struct ByteInfo

@@ -24,7 +24,6 @@ void HuffmanHelper::encode(const string &input, const string &output)
 #endif // COUT_IN_CONSOLE
 
 	readFromFile(input.c_str());
-
 	for(auto &i:rawBytes)
 	{
 		if (byteSet.find(i) == byteSet.end())
@@ -224,7 +223,7 @@ void HuffmanHelper::decode(const string &input, const string &output)
 		}
 #endif
 		byte i = *pos;
-		int th = (pos + 1 == rawBytes.end()) ? resBit : 8;
+		int th = ((pos + 1 == rawBytes.end()) && resBit != 0) ? resBit : 8;
 		while(j < th)
 		{
 			s += '0' + ((i >> (7 - j)) & 1);
@@ -248,23 +247,6 @@ void HuffmanHelper::decode(const string &input, const string &output)
 	cout << "写入完成" << endl;
 #endif
 }
-
-/*void HuffmanHelper::writeTofile(const std::string &filename, ACTION action)
-{
-	switch (action)
-	{
-	case HuffmanHelper::ENCODE:
-		output_filename = filename;
-		writeEncode();
-		break;
-	case HuffmanHelper::DECODE:
-		output_filename = filename;
-		writeDecode();
-		break;
-	default:
-		break;
-	}
-}*/
 
 size_t HuffmanHelper::getFileSize(FILE* file) {
 	fseek(file, 0, SEEK_END);
@@ -291,7 +273,6 @@ void HuffmanHelper::readFromFile(const char* filePath) {
 		return;
 	}
 
-	// 获取文件大小，尽量一次读完
 	size_t fileSize = getFileSize(file);
 	if (fileSize != 0) {
 		rawBytes.resize(fileSize);
@@ -302,7 +283,6 @@ void HuffmanHelper::readFromFile(const char* filePath) {
 		}
 	}
 
-	// 在读取过程当中，有可能文件大小有变化，再尝试读取
 	const size_t read_len = 1024;
 	char buf[read_len];
 	for (;;) {

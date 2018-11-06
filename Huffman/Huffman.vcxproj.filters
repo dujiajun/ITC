@@ -21,18 +21,12 @@
     <ClCompile Include="HuffmanTree.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ByteIO.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="HuffmanHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HuffmanTree.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ByteIO.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="DataType.h">
