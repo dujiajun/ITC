@@ -32,9 +32,11 @@ namespace CompressGUI
         public enum ACTION { ENCODE,DECODE};
         public CODE CodingMethod = CODE.CODE_HUFFMAN;
         public ACTION action = ACTION.ENCODE;
-        private string SrcFileName;
-        private string DstFileName;
+        private string SrcFileName = null;
+        private string DstFileName = null;
         private string exe, arg;
+        private string filter = "Huffman Coded File(*.hfm)|*.hfm";
+
         private void Btn_open_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog
@@ -58,7 +60,7 @@ namespace CompressGUI
         {
             System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog
             {
-                Filter = "All Files(*.*)|*.*"
+                Filter = filter
             };
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -70,20 +72,28 @@ namespace CompressGUI
         private void Rb_huffman_Checked(object sender, RoutedEventArgs e)
         {
             CodingMethod = CODE.CODE_HUFFMAN;
+            filter = "Huffman Coded File(*.hfm)|*.hfm";
         }
 
         private void Rb_arithmetic_Checked(object sender, RoutedEventArgs e)
         {
             CodingMethod = CODE.CODE_ARITHMETIC;
+            filter = "Arithmetic Coded File(*.atm)|*.atm";
         }
 
         private void Rb_lz_Checked(object sender, RoutedEventArgs e)
         {
             CodingMethod = CODE.CODE_LZ;
+            filter = "LZ Coded File(*.lz)|*.lz";
         }
 
         private void Btn_do_Click(object sender, RoutedEventArgs e)
         {
+            if(SrcFileName==null||DstFileName==null)
+            {
+                MessageBox.Show("请设置需要处理的文件名");
+                return;
+            }
             switch (action)
             {
                 case ACTION.ENCODE:
@@ -100,6 +110,9 @@ namespace CompressGUI
             {
                 case CODE.CODE_HUFFMAN:
                     exe = "Huffman.exe";
+                    break;
+                case CODE.CODE_LZ:
+                    exe = "LZ.exe";
                     break;
                 default:
                     exe = "Huffman.exe";
